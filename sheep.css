@@ -1,0 +1,32 @@
+.effect-sheep { --sky: linear-gradient(180deg, #74bdf2 0%, #96cff7 16%, #c2e4fb 48%, #e1f1fd 82%, #edf7fe 100%);
+  --text: #182a3a; --muted: #33495e; --soft: #3f5468; --accent: #084b78; --line: rgba(255, 255, 255, .72); --bg: #e1f1fd;
+  --card: rgba(255, 255, 255, .6); --tint: rgba(255, 255, 255, .55); --code-bg: rgba(255, 255, 255, .62); }
+.effect-sheep::before { content: ""; position: fixed; inset: 0; z-index: -1; background: var(--sky); pointer-events: none; }
+.effect-sheep .site-header, .effect-sheep main, .effect-sheep .site-footer { position: relative; z-index: 1; }
+.effect-sheep .site-header { position: sticky; z-index: 5; background: rgba(255, 255, 255, .4); border-bottom-color: rgba(255, 255, 255, .6); backdrop-filter: blur(14px) saturate(1.2); }
+.effect-sheep ::selection { background: rgba(255, 255, 255, .85); color: #0b2a44; }
+html:has(> body.effect-sheep) { scrollbar-color: rgba(8, 75, 120, .35) transparent; }
+.sheep-stars { display: none; }
+.effect-sheep .post-layout, .effect-sheep .post-layout.single { grid-template-columns: minmax(0, 660px); justify-content: center; }
+.effect-sheep .toc { position: fixed; top: 96px; right: max(16px, calc(50vw - 330px - 270px)); width: 220px; margin: 0; }
+.sheep-sky { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 0; overflow: visible; }
+.sheep-spark { animation: sheep-twinkle 2.6s ease-in-out infinite; }
+@keyframes sheep-twinkle { 0%, 100% { opacity: .3; } 50% { opacity: .95; } }
+@media (max-width: 1260px) { .effect-sheep .toc { display: none; } }
+@media (max-width: 860px) { .effect-sheep main.wrap { padding-left: 72px; } }
+@media (prefers-color-scheme: dark) {
+  .effect-sheep { --sky: linear-gradient(180deg, #071226 0%, #0c1e3b 40%, #13294c 78%, #183157 100%);
+    --text: #e6eef7; --muted: #b1c1d5; --soft: #91a4bb; --accent: #8ccaff; --line: rgba(150, 185, 230, .2); --bg: #13294c;
+    --card: rgba(10, 24, 48, .55); --tint: rgba(120, 170, 240, .14); --code-bg: rgba(6, 16, 34, .55); }
+  .effect-sheep .site-header { background: rgba(7, 18, 38, .55); border-bottom-color: rgba(150, 185, 230, .14); }
+  .effect-sheep ::selection { background: rgba(140, 202, 255, .3); color: #fff; }
+  html:has(> body.effect-sheep) { scrollbar-color: rgba(140, 202, 255, .3) transparent; }
+  .sheep-white { fill: #e2eaf6; }
+  .sheep-ground { fill: rgba(0, 0, 0, .32); }
+  .sheep-water { fill: #1d3d68; }
+  .sheep-glint { fill: #3a6499; }
+  .sheep-sun { display: none; }
+  .sheep-stars { display: inline; }
+}
+@media (prefers-reduced-motion: reduce) { .sheep-spark { animation: none; opacity: .7; } }
+@media print { .sheep-sky { display: none; } }
