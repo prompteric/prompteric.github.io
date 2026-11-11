@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://prompteric.github.io/sitemap.xml
