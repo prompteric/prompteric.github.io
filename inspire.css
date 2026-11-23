@@ -1,0 +1,88 @@
+/* 灵感图谱 on a post page (inspire.go, inspire.js): the article moves left and the map takes the
+   right of the window, from 1280px wide up. Its soft greens follow decay.connie.surf, the one
+   exception to the site's no-green rule (docs/design/设计说明.md). */
+.inspire, .inspire-toggle {
+  --ins-bg: #f4f8f0; --ins-node: #ffffff; --ins-line: #d5e3cb; --ins-edge: #cfdcc5; --ins-ink: #3f4a3a; --ins-muted: #8a9784;
+  --ins-green: #7cb663; --ins-soft: #e2f6d3; --ins-wash: #eefae5; --ins-deep: #2f6a1f;
+}
+[data-theme="dark"] .inspire, [data-theme="dark"] .inspire-toggle {
+  --ins-bg: #111710; --ins-node: #182017; --ins-line: #2c3a29; --ins-edge: #2a3727; --ins-ink: #d3dccd; --ins-muted: #7f8f78;
+  --ins-green: #86c06c; --ins-soft: #22391b; --ins-wash: #1a2b15; --ins-deep: #bfe6a9;
+}
+.inspire, .inspire-toggle, .inspire-line { display: none; }
+
+@media (min-width: 1280px) {
+  .inspire-ready .inspire-toggle { display: flex; position: fixed; top: 84px; right: 20px; z-index: 6; align-items: center; gap: 7px; padding: 8px 14px; border: 1px solid var(--ins-line); border-radius: 999px; background: var(--ins-bg); color: var(--ins-deep); font: inherit; font-size: 14px; cursor: pointer; box-shadow: 0 6px 20px -14px rgba(47, 106, 31, .5); transition: transform .2s ease, box-shadow .2s ease; }
+  .inspire-ready .inspire-toggle:hover { transform: translateY(-1px); box-shadow: 0 10px 24px -14px rgba(47, 106, 31, .6); }
+  .inspire-ready .inspire-toggle svg { width: 16px; height: 16px; }
+  .inspire-on .inspire-toggle { display: none; }
+
+  /* The article alone in its column, the side below it as on a narrow window. */
+  .inspire-on .desk { padding-right: calc(var(--inspire-w, 480px) + 24px); }
+  .inspire-on .post-wrap { grid-template-columns: minmax(0, 768px); }
+  .inspire-on .side { position: static; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+  .inspire-on .side .toc { display: none; }
+  .inspire-on .toc-in { display: block; }
+  .inspire-on .dock { right: calc(var(--inspire-w, 480px) + 20px); }
+  .inspire-on .dock .toc-btn { display: grid; }
+
+  .inspire-on .inspire { position: fixed; top: 65px; right: 0; bottom: 0; z-index: 4; display: flex; flex-direction: column; width: var(--inspire-w, 480px); background: var(--ins-bg); border-left: 1px dashed color-mix(in srgb, var(--ins-muted) 55%, transparent); color: var(--ins-ink); }
+  .inspire-on .inspire-line { display: block; position: fixed; left: 0; right: 0; top: 40vh; z-index: 3; height: 0; border-top: 1.5px solid color-mix(in srgb, #8cc276 75%, transparent); pointer-events: none; }
+}
+
+.inspire-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 14px 8px 24px; }
+.inspire-head [role=tablist] { display: flex; gap: 16px; }
+.inspire-head [role=tab] { padding: 2px 0; border: 0; border-bottom: 2px solid transparent; background: none; font: inherit; font-size: 17px; color: var(--ins-muted); cursor: pointer; }
+.inspire-head [role=tab][aria-selected=true] { color: var(--ins-ink); border-bottom-color: var(--ins-ink); }
+.inspire-close { width: 32px; height: 32px; display: grid; place-items: center; border: 0; border-radius: 8px; background: none; color: var(--ins-muted); cursor: pointer; }
+.inspire-close:hover { background: var(--ins-wash); color: var(--ins-deep); }
+.inspire-close svg { width: 16px; height: 16px; }
+
+.inspire-stage { position: relative; flex: 1; min-height: 0; overflow: hidden;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 36px, #000 calc(100% - 36px), transparent), linear-gradient(to bottom, transparent, #000 28px, #000 calc(100% - 28px), transparent);
+  -webkit-mask-composite: source-in; mask-image: linear-gradient(to right, transparent, #000 36px, #000 calc(100% - 36px), transparent), linear-gradient(to bottom, transparent, #000 28px, #000 calc(100% - 28px), transparent); mask-composite: intersect; }
+.inspire-plane { position: absolute; left: 0; top: 0; transform-origin: 0 0; transition: transform .7s cubic-bezier(.2, .8, .2, 1); }
+.inspire-edges { position: absolute; left: 0; top: 0; width: 1px; height: 1px; overflow: visible; pointer-events: none; }
+.inspire-edges line { stroke: var(--ins-edge); stroke-width: 1; transition: stroke .35s ease, opacity .35s ease; }
+.inspire-edges line.on { stroke: var(--ins-green); opacity: .85; }
+.inspire-edges line.to-card { stroke: var(--ins-green); opacity: .85; stroke-dasharray: 1; stroke-dashoffset: 1; animation: inspire-draw .55s cubic-bezier(.2, .8, .2, 1) forwards; }
+@keyframes inspire-draw { to { stroke-dashoffset: 0; } }
+
+.inspire-node { position: absolute; max-width: 200px; padding: 7px 12px; border: 1px solid var(--ins-line); border-radius: 3px; background: var(--ins-node); color: var(--ins-ink); font-size: 13.5px; line-height: 1.35; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-decoration: none; transform: translate(-50%, -50%); transition: opacity .35s ease, color .35s ease, background .35s ease, border-color .35s ease, box-shadow .35s ease; }
+a.inspire-node:hover { border-color: var(--ins-green); color: var(--ins-deep); }
+.inspire-node.k-tag { color: var(--ins-muted); }
+.inspire-node.k-self { border-color: var(--ins-ink); font-weight: 600; max-width: 220px; }
+.inspire-node.faint { opacity: .32; }
+.inspire-node.near { opacity: 1; border-color: color-mix(in srgb, var(--ins-ink) 50%, transparent); }
+.inspire-node.lit { z-index: 2; opacity: 1; border-color: var(--ins-green); color: var(--ins-deep); background: var(--ins-soft); }
+.inspire-node.lead { border-radius: 999px; padding-inline: 16px; font-size: 15px; box-shadow: 0 0 0 5px color-mix(in srgb, var(--ins-soft) 60%, transparent), 0 6px 18px -10px color-mix(in srgb, var(--ins-deep) 45%, transparent); }
+
+.inspire-card { position: absolute; z-index: 3; display: flex; flex-direction: column; gap: 6px; width: 230px; padding: 11px 15px; border-radius: 14px; background: var(--ins-wash); color: var(--ins-deep); text-decoration: none; transform: translate(-50%, -50%); transition: background .2s ease, box-shadow .2s ease, transform .2s ease; animation: inspire-in .45s cubic-bezier(.2, .8, .2, 1) .12s backwards; }
+.inspire-card:hover { background: var(--ins-soft); box-shadow: 0 0 0 1px var(--ins-green), 0 10px 22px -14px color-mix(in srgb, var(--ins-deep) 50%, transparent); transform: translate(-50%, calc(-50% - 2px)); }
+.inspire-card b { font-size: 14px; line-height: 1.4; }
+.inspire-card-image { display: block; width: calc(100% + 30px); max-width: none; height: 116px; margin: -11px -15px 2px; object-fit: cover; border-radius: 14px 14px 0 0; background: var(--ins-soft); }
+.inspire-card.pictured p { -webkit-line-clamp: 3; }
+.inspire-card p { margin: 0; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; font-size: 13px; line-height: 1.55; color: var(--ins-ink); }
+.inspire-card small { display: flex; justify-content: space-between; gap: 8px; font-size: 12px; color: var(--ins-muted); }
+.inspire-card small i { font-style: normal; color: var(--ins-green); transition: transform .2s ease; }
+.inspire-card:hover small i { transform: translateX(2px); }
+@keyframes inspire-in { from { opacity: 0; scale: .94; } to { opacity: 1; scale: 1; } }
+
+.inspire-list { flex: 1; min-height: 0; overflow: auto; margin: 0; padding: 4px 24px 80px; list-style: none; }
+.inspire-list li { border-bottom: 1px dashed var(--ins-line); }
+.inspire-list a { display: block; padding: 12px 0; color: var(--ins-ink); text-decoration: none; }
+.inspire-list a:hover b { color: var(--ins-deep); }
+.inspire-list small { display: block; font-size: 12px; color: var(--ins-muted); }
+.inspire-list b { display: block; margin: 2px 0; font-size: 15px; font-weight: 600; transition: background .3s ease; }
+.inspire-list p { margin: 0; font-size: 13px; line-height: 1.55; color: var(--ins-muted); }
+.inspire-list li.lit b { display: inline-block; padding: 0 10px; border-radius: 999px; background: var(--ins-soft); color: var(--ins-deep); }
+
+/* A paragraph being read for what it mentions: a soft bar in the margin beside it. */
+.inspire-on .content .inspire-para { border-radius: 4px; box-shadow: -14px 0 0 -11px #9cc98a; transition: box-shadow .3s ease; }
+/* The link being read, in the text. */
+.inspire-on .content a.inspire-at { background: color-mix(in srgb, #9cc98a 30%, transparent); border-radius: 3px; box-shadow: 0 0 0 2px color-mix(in srgb, #9cc98a 30%, transparent); transition: background .3s ease; }
+
+@media (prefers-reduced-motion: reduce) {
+  .inspire-plane, .inspire-node, .inspire-card, .inspire-toggle { transition: none; }
+  .inspire-card, .inspire-edges line.to-card { animation: none; stroke-dashoffset: 0; }
+}
